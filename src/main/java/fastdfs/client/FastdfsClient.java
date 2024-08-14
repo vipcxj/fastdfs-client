@@ -28,6 +28,7 @@ public final class FastdfsClient implements Closeable {
     private final FastdfsExecutor executor;
     private final TrackerClient trackerClient;
     private final StorageClient storageClient;
+    private boolean closed;
 
     private FastdfsClient(Builder builder) {
 
@@ -42,6 +43,7 @@ public final class FastdfsClient implements Closeable {
         this.executor = new FastdfsExecutor(settings);
         this.trackerClient = new TrackerClient(executor, builder.selector, builder.trackers);
         this.storageClient = new StorageClient(executor);
+        this.closed = false;
     }
 
     /**
@@ -377,7 +379,7 @@ public final class FastdfsClient implements Closeable {
      * @param size
      * @return
      */
-    public CompletableFuture<byte[]> download(String fileId, int offset, int size) {
+    public CompletableFuture<byte[]> download(String fileId, long offset, int size) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         return download(fileId, out, offset, size).thenApply(res -> out.toByteArray());
     }
@@ -389,7 +391,7 @@ public final class FastdfsClient implements Closeable {
      * @param size
      * @return
      */
-    public CompletableFuture<Void> download(String fileId, Object out, int offset, int size) {
+    public CompletableFuture<Void> download(String fileId, Object out, long offset, int size) {
         return download(FileId.fromString(fileId), out, offset, size);
     }
 
@@ -399,7 +401,7 @@ public final class FastdfsClient implements Closeable {
      * @param size
      * @return
      */
-    public CompletableFuture<byte[]> download(FileId fileId, int offset, int size) {
+    public CompletableFuture<byte[]> download(FileId fileId, long offset, int size) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         return download(fileId, out, offset, size).thenApply(res -> out.toByteArray());
     }
@@ -411,7 +413,7 @@ public final class FastdfsClient implements Closeable {
      * @param size
      * @return
      */
-    public CompletableFuture<Void> download(FileId fileId, Object out, int offset, int size) {
+    public CompletableFuture<Void> download(FileId fileId, Object out, long offset, int size) {
         Objects.requireNonNull(fileId, "fileId must not be null.");
         Objects.requireNonNull(out, "out must not be null.");
         return trackerClient
@@ -706,6 +708,11 @@ public final class FastdfsClient implements Closeable {
     @Override
     public void close() throws IOException {
         executor.close();
+        closed = true;
+    }
+
+    public boolean isClose() {
+        return closed;
     }
 
     /**

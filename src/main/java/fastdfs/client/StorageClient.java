@@ -257,7 +257,7 @@ final class StorageClient {
      * @param output 输出流
      * @return 下载进度
      */
-    CompletableFuture<Void> download(StorageServer server, FileId fileId, Object output, int offset, int size) {
+    CompletableFuture<Void> download(StorageServer server, FileId fileId, Object output, long offset, int size) {
         return executor.execute(
                 server.toInetAddress(),
                 new FileDownloadEncoder(fileId, offset, size),

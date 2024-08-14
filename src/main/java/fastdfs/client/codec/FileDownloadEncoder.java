@@ -27,7 +27,7 @@ public class FileDownloadEncoder implements Requestor.Encoder {
     private static final int SIZE_UNLIMIT = 0;
 
     private final FileId fileId;
-    private final int offset;
+    private final long offset;
     private final int size;
 
     /**
@@ -42,7 +42,7 @@ public class FileDownloadEncoder implements Requestor.Encoder {
      * @param offset
      * @param size
      */
-    public FileDownloadEncoder(FileId fileId, int offset, int size) {
+    public FileDownloadEncoder(FileId fileId, long offset, int size) {
         this.fileId = fileId;
         this.offset = offset;
         this.size = size;
